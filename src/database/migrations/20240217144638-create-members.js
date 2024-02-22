@@ -25,7 +25,7 @@ module.exports = {
         allowNull: true,
       },
       member_user_name: {
-        type: Sequelize.FLOAT, // Assuming this should be STRING
+        type: Sequelize.STRING,
         allowNull: false,
       },
       createdAt: {

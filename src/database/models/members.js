@@ -24,7 +24,7 @@ const members = sequilize.define('members', {
         allowNull:true,
     },
     member_user_name:{
-        type:DataTypes.FLOAT,
+        type:DataTypes.STRING,
         allowNull:false,
     },
 });
