@@ -70,7 +70,6 @@ class personalService {
 
     /** Removing a member from a Channel */
     static async deleteMemberChannelRelation(memberId, channelId) {
-        console.log('Deleting member-channel relation');
         const sql = `
             DELETE FROM member_channel_relation
             WHERE member_id = '${memberId}' AND channel_id = '${channelId}'
