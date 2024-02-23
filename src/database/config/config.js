@@ -1,19 +1,21 @@
-// const { Sequelize } = require('sequelize');
 
-
-// const DATABASE_HOST = 'localhost';
-// const DATABASE_USER = 'root';
-// const DATABASE_PASSWORD = 'radars_db';
-// const DATABASE_PORT= '3306';
-// const DATABASE = 'radars_db';
+// module.exports = {
+//   development: {
+//     username: 'root',
+//     password: 'radars_db',
+//     database: 'radars_db',
+//     host: 'localhost',
+//     dialect: 'mysql',
+//   }
+// }
 
 export default {
     development: {
-      username: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE,
-      host: process.env.DATABASE_HOST,
+      username: 'root',
+      password: 'radars_db',
+      database: 'radars_db',
+      host: 'localhost',
       dialect: 'mysql',
-      port: process.env.DATABASE_PORT,
+      port: '3306',
     },
   }

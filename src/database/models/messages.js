@@ -30,7 +30,7 @@ const messages = sequilize.define('messages', {
         allowNull:false,
     },
     reciever_unique_id:{
-        type:DataTypes.STRING,
+        type:DataTypes.JSON,
         allowNull:false,
     },
     send_time:{
