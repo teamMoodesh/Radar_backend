@@ -10,7 +10,7 @@ const persistant_messages = sequilize.define('persistant_messages', {
         autoIncrement:true,
     },
     message_id:{
-        type:DataTypes.INTEGER,
+        type:DataTypes.UUID,
         allowNull:false,
         references:{
             model:messages,
@@ -23,6 +23,6 @@ const persistant_messages = sequilize.define('persistant_messages', {
     },
 });
 
-persistant_messages.belongsTo(messages, {foreignKey:'id'});
+persistant_messages.belongsTo(messages, {foreignKey:'message_id'});
 
 module.exports = persistant_messages;

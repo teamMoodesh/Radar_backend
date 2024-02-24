@@ -8,7 +8,6 @@ const {ApiError}=require('./utils/ApiError')
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
-const groupChat = require('./controller/groupChatController')
 
 app.use(
   cors({
@@ -24,7 +23,8 @@ app.use(cookieParser());
 
 const Routes = require('./routes/personalRoutes');
 const messages = require('./database/models/messages');
-const clients={};
+const groupChatService = require('./services/groupChatService');
+const { asyncHandler } = require('./utils/AsyncHandler');
 
 app.get("/", (req, res) => {
   res.send("hello World");
@@ -33,27 +33,49 @@ app.get("/", (req, res) => {
 app.use("/api/v1", Routes)
 
 wss.on('connection', (ws)=>{
+  const clients={};
   ws.on('message', (messages)=>{
     try{
       let data = JSON.parse(messages);
       if(data.action === 'init'){
         const client_id = data.client_id;
-        clients[client_id]={'ws': ws};
-      }
-      if(data.action === 'channel'){
-        let data = JSON.parse(messages);
-        Object.keys(clients).forEach((client_id)=>{
-          if(client_id === data.client_id){
-            clients[client_id]={'channel_id': data.channel_id};
-            groupChat.groupChat(clients);
-          }else{
-            clients[client_id]={'channel_id':data.channel_id, 'ws':ws}
-            groupChat.groupChat(clients);
-          }
-        })
+        asyncHandler(groupChatService.addActiveClients(client_id, ws));
       }
     }catch (error) {
       console.log(error);  
+    }
+  })
+
+  ws.on('message', (messages)=>{
+    try{
+      let data = JSON.parse(messages);
+      if(data.action === 'channel'){
+        const channel_id = data.channel_id;
+        asyncHandler(groupChatService.updateChannelIdOfAC(channel_id, ws));
+      }
+    }catch(error){
+      console.log(error)
+    }
+  })
+
+  ws.on('message', (messages)=>{
+    try{
+      let data = JSON.parse(messages);
+      if(data.action === 'message'){
+        const channel_id = data.channel_id;
+        const client_id = data.member_id;
+        const msg = data.msg;
+        const wsIds = groupChatService.selectActiveClients(channel_id, client_id);
+        wsIds.forEach(wsId => {
+          try {
+            wsId.send(JSON.stringify({ action: 'rply', msg: msg }));
+          } catch (error) {
+            console.error('Error sending message:', error);
+          }
+        });
+      }
+    }catch(error){
+      console.log(error);
     }
   })
 })
