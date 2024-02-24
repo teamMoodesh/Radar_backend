@@ -39,6 +39,80 @@ class personalService {
             })
         })
     }
+
+    
+    /** Add member to a Channel */
+    static async insertMemberChannelRelation(memberId, channelId) {
+
+        const memberExist = await this.checkIfMemberAlreadyExists(memberId, channelId)
+        if(memberExist == 0) {
+            const sql = `
+                INSERT INTO member_channel_relation (member_id, channel_id, createdAt, updatedAt)
+                VALUES ('${memberId}', '${channelId}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            `;
+            return new Promise((resolve, reject)=>{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        reject(new ApiError(500, 'Internal Server Error'));
+                    }
+    
+                    if(result.length === 0){
+                        reject(new ApiError(404, 'Error Adding Member'));
+                    }
+                    const data = result;
+                    resolve({status:'Success', data})
+                })
+            })
+        } else {
+            return Promise.reject(new ApiError(400, 'Member already exists in the channel'));
+        }
+    }
+
+    /** Removing a member from a Channel */
+    static async deleteMemberChannelRelation(memberId, channelId) {
+        const sql = `
+            DELETE FROM member_channel_relation
+            WHERE member_id = '${memberId}' AND channel_id = '${channelId}'
+        `;
+        return new Promise((resolve, reject)=>{
+            connect.query(sql, (err, result)=>{
+                if(err){
+                    reject(new ApiError(500, 'Internal Server Error'));
+                }
+
+                if(result.length === 0){
+                    reject(new ApiError(404, 'Error Deleting Member'));
+                }
+                const data = result;
+                resolve({status:'Success', data})
+            })
+        })
+    }
+
+    /** TO Check If a memeber is already in a Channel */
+
+    static async checkIfMemberAlreadyExists(memberId, channelId) {
+        const sql = `
+            SELECT COUNT(*) AS count
+            FROM member_channel_relation
+            WHERE member_id = '${memberId}' AND channel_id = '${channelId}'
+        `;
+        return new Promise((resolve, reject)=>{
+            connect.query(sql, (err, result)=>{
+                if(err){
+                    reject(new ApiError(500, 'Internal Server Error'));
+                }
+
+                if(result.length === 0){
+                    reject(new ApiError(404, 'Error Deleting Member'));
+                }
+                const data = result[0].count;
+                resolve(data)
+            })
+        })
+    }
+    
 }
+
 
 module.exports = personalService;

@@ -17,5 +17,21 @@ personalController.post('/chats', async (req,res)=>{
     res.send(result);
 })
 
+personalController.post('/add-mem-channel', async (req,res)=>{
+    const data = req.body;
+    const memberId = data.member_id;
+    const channelId = data.channel_id;
+    const result = await personalService.insertMemberChannelRelation(memberId, channelId);
+    res.send(result);
+})
+
+personalController.post('/delete-mem-channel', async (req,res)=>{
+    const data = req.body;
+    const memberId = data.member_id;
+    const channelId = data.channel_id;
+    const result = await personalService.deleteMemberChannelRelation(memberId, channelId);
+    res.send(result);
+})
+
 
 module.exports = personalController;
