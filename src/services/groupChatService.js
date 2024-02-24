@@ -3,10 +3,10 @@ const {ApiError} = require('../utils/ApiError');
 
 class groupChatService{
 
-    /* Adding active clients to active status table */
-    static async addActiveClients(client_id, ws){
+    /* Update active clients to active status table */
+    static async UpdateWSActiveClients(client_id, ws){
         console.log('addActiveClients');
-        const sql = `INSERT INTO active_clients(client_id, ws_id, active_sts, createdAt, updatedAt) VALUES('${client_id}', '${ws}', 'ACTIVE', now(), now())`;
+        const sql = `UPDATE active_clients SET ws_id = ${ws}, updatedAt = now() WHERE client_id = ${client_id}`;
         return new Promise((resolve, reject)=>{
             connect.query(sql, (err, result)=>{
                 if(err){
@@ -23,7 +23,7 @@ class groupChatService{
     /* update active clients channel */
     static async updateChannelIdOfAC(channel_id, ws){
         console.log('addActiveClients');
-        const sql = `UPDATE active_clients SET channel_id = ${channel_id} WHERE ws_id = ${ws}`;
+        const sql = `UPDATE active_clients SET channel_id = ${channel_id}, updatedAt = now() WHERE ws_id = ${ws}`;
         return new Promise((resolve, reject)=>{
             connect.query(sql, (err, result)=>{
                 if(err){
