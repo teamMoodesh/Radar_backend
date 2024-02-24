@@ -2,6 +2,8 @@ const { connect } = require('../database/mysql');
 const {ApiError} = require('../utils/ApiError');
 
 class personalService {
+
+    /* get all profile details */
     static async getAllProfileDetails(profile_id) {
         console.log('getAllProfileDetails');
         const sql = `SELECT * FROM members WHERE member_id = '${profile_id}'`;
@@ -22,6 +24,7 @@ class personalService {
         })
     }
 
+    /* get all channels of a member */
     static async getAllChannelsWithId(profile_id){
         console.log('getAllChannelsWithId');
         const sql = `SELECT c.channel_id, c.channel_name, c.channel_type_id, m.member_name, m.member_role_id, m.designation, m.member_user_name FROM channels c INNER JOIN member_channel_relation mcr ON c.channel_id = mcr.channel_id INNER JOIN members m ON m.member_id = mcr.member_id WHERE m.member_id = '${profile_id}'`;
@@ -40,7 +43,6 @@ class personalService {
         })
     }
 
-    
     /** Add member to a Channel */
     static async insertMemberChannelRelation(memberId, channelId) {
 
