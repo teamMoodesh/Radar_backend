@@ -6,7 +6,7 @@ class groupChatService{
     /* Update active clients to active status table */
     static async UpdateWSActiveClients(client_id, ws){
         console.log('addActiveClients');
-        const sql = `UPDATE active_clients SET ws_id = ${ws}, updatedAt = now() WHERE client_id = ${client_id}`;
+        const sql = `UPDATE active_clients SET ws_id = ${ws}, updatedAt = now(), active_sts = 1 WHERE client_id = ${client_id}`;
         return new Promise((resolve, reject)=>{
             connect.query(sql, (err, result)=>{
                 if(err){
