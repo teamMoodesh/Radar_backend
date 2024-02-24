@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./database/index.js');
 const { app } = require('./app.js');
 
+
 dotenv.config({
   path: "/env",
 });

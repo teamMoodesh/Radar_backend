@@ -30,7 +30,7 @@ const messages = sequilize.define('messages', {
         allowNull:false,
     },
     reciever_unique_id:{
-        type:DataTypes.STRING,
+        type:DataTypes.JSON,
         allowNull:false,
     },
     send_time:{
@@ -47,6 +47,6 @@ const messages = sequilize.define('messages', {
     },
 });
 
-messages.belongsTo(channels, {foreignKey:'channel_id'});
+messages.belongsTo(channels, {foreignKey:'chat_unique_id'});
 
 module.exports=messages;
