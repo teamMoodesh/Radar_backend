@@ -21,6 +21,14 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         allowNull: false,
       },
+      member_id:{
+        type:DataTypes.UUID,
+        allowNull:false,
+        references:{
+            model:'members',
+            key:'member_id'
+        }
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

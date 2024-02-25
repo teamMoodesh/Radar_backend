@@ -1,9 +1,9 @@
 const {DataTypes} = require('sequelize');
-const sequilize = require('../config/config');
+const {sequelize} = require('../index');
 const channels = require('./channel');
 
 
-const messages = sequilize.define('messages', {
+const messages = sequelize.define('messages', {
     id:{
         type:DataTypes.INTEGER,
         primaryKey:true,
@@ -39,11 +39,13 @@ const messages = sequilize.define('messages', {
     },
     received_time:{
         type:DataTypes.DATE,
-        allowNull:false,
+        allowNull:true,
+        defaultValue:null,
     },
     read_time:{
         type:DataTypes.DATE,
-        allowNull:false,
+        allowNull:true,
+        defaultValue:null,
     },
 });
 

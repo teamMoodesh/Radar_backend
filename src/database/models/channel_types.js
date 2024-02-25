@@ -1,8 +1,8 @@
 const {DataTypes} = require('sequelize');
-const sequilize = require('../config/config');
+const {sequelize} = require('../index');
 
 
-const channel_types = sequilize.define('channel_types', {
+const channel_types = sequelize.define('channel_types', {
     type_id:{
         type:DataTypes.INTEGER,
         primaryKey:true,

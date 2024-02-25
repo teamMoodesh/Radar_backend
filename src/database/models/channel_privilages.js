@@ -1,5 +1,5 @@
 const {DataTypes} = require('sequelize');
-const sequelize = require('../config/config');
+const {sequelize} = require('../index');
 const channel_types = require('./channel_types');
 
 const channel_privilages = sequelize.define('channel_privilages', {

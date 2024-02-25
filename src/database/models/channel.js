@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
-const sequilize = require('../config/config');
+const {sequelize} = require('../index');
 const channel_types = require('./channel_types');
 
-const channels = sequilize.define('channels', {
+const channels = sequelize.define('channels', {
   channel_id: {
     type: DataTypes.UUID,
     primaryKey: true,
@@ -11,8 +11,8 @@ const channels = sequilize.define('channels', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  max_members: {
-    type: DataTypes.INTEGER,
+  type: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
   channel_type_id: {

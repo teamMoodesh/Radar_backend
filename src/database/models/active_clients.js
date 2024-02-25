@@ -1,11 +1,11 @@
 const { DataTypes } = require('sequelize');
-const sequilize = require('../config/config');
+const {sequelize} = require('../index');
 const channels = require('./channel');
 const members = require('./members');
 
 
 
-const active_clients = sequilize.define('active_clients', {
+const active_clients = sequelize.define('active_clients', {
     id:{
         type:DataTypes.INTEGER,
         primaryKey:true,
@@ -26,10 +26,6 @@ const active_clients = sequilize.define('active_clients', {
             model:'channels',
             key:'channel_id',
         }
-    },
-    ws_id:{
-        type:DataTypes.STRING,
-        allowNull:true,
     },
     active_sts:{
         type:DataTypes.BOOLEAN,

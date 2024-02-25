@@ -39,11 +39,13 @@ module.exports = {
       },
       received_time: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
+        defaultValue:null,
       },
       read_time: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
+        defaultValue:null,
       },
       createdAt: {
         allowNull: false,

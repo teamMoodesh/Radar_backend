@@ -1,8 +1,8 @@
 const {DataTypes} = require('sequelize');
-const sequilize = require('../config/config');
+const {sequelize} = require('../index');
 const roles = require('./roles');
 
-const role_privilages = sequilize.define('role_privilages',{
+const role_privilages = sequelize.define('role_privilages',{
 
     id:{
         type:DataTypes.INTEGER,

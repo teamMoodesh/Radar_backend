@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
-const sequilize = require('../config/config');
+const {sequelize} = require('../index');
 const roles = require('./roles')
 
-const members = sequilize.define('members', {
+const members = sequelize.define('members', {
     member_id:{
         type:DataTypes.UUID,
         primaryKey:true,

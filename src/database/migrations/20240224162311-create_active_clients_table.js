@@ -25,10 +25,6 @@ module.exports = {
           key: 'channel_id',
         },
       },
-      ws_id: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
       active_sts: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
