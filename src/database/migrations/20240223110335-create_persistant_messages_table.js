@@ -22,7 +22,7 @@ module.exports = {
         allowNull: false,
       },
       member_id:{
-        type:DataTypes.UUID,
+        type:Sequelize.UUID,
         allowNull:false,
         references:{
             model:'members',
