@@ -17,9 +17,9 @@ const groupChatService = require('./services/groupChatService');
 const { asyncHandler } = require('./utils/AsyncHandler');
 
 http.on('request', app);
-
+const clients={};
 wss.on('connection', (ws)=>{
-  const clients={};
+  
   ws.on('message', (messages)=>{
     try{
       let data = JSON.parse(messages);
