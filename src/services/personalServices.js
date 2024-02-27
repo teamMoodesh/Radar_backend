@@ -113,6 +113,27 @@ class personalService {
             })
         })
     }
+
+    /** To fetch all members */
+    static async fetchAllMembersData() {
+        const sql = `
+            SELECT *
+            FROM members
+        `;
+        return new Promise((resolve, reject)=>{
+            connect.query(sql, (err, result)=>{
+                if(err){
+                    reject(new ApiError(500, 'Internal Server Error'));
+                }
+
+                if(result.length === 0){
+                    reject(new ApiError(404, 'Error Fetching Members'));
+                }
+                const data = result;
+                resolve(data)
+            })
+        })
+    }
     
 }
 
