@@ -38,6 +38,26 @@ class groupChatService{
         })
     }
     
+    /* update active clients to inactive */
+    static async updateToInactive(channel_id, client_id){
+        console.log('updateToInactive');
+        try{
+            const sql = `UPDATE active_clients SET active_sts = 0, updatedAt = now() WHERE client_id = '${client_id}' AND channel_id = '${channel_id}'`;
+            return new Promise((resolve, reject)=>{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        console.log('Internal Server Error')
+                        throw(new ApiError(500, 'Internal Server Error'));
+                    }
+                    const data = result[0];
+                    resolve({status: 'success', data});
+                })
+            })
+        }catch(error){
+            reject(error)
+        }
+    }
+
     /* select active clients */
     static async selectActiveClients(channel_id, client_id){
         console.log('selectActiveClients');

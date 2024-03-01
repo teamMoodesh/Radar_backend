@@ -107,6 +107,21 @@ wss.on("connection", (ws) => {
       console.log(error);
     }
   });
+
+  ws.on("message",async(message)=>{
+    try{
+      let data = JSON.parse(message);
+      if(data.action === 'close'){
+        const member_id = data.member_id;
+        const channel_id = data.channel_id;
+        console.log(channel_id);
+
+        asyncHandler(groupChatService.updateToInactive(channel_id, member_id));
+      }
+    }catch(error){
+      console.log(error)
+    }
+  })
 });
 
 dotenv.config({
