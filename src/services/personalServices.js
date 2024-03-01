@@ -158,7 +158,7 @@ class personalService {
         const commonChannelExists = await this.getMemberMemberChannels(memberId, senderId)
         if(commonChannelExists.length > 0) {
             const sql = `
-                        SELECT DISTINCT mcr.channel_id
+                        SELECT DISTINCT mcr.channel_id, ch.channel_name
                         FROM member_channel_relation AS mcr
                         INNER JOIN channels AS ch ON mcr.channel_id = ch.channel_id
                         WHERE mcr.member_id IN ('${memberId}', '${senderId}')
