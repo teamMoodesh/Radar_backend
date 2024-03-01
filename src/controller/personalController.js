@@ -80,7 +80,7 @@ personalController.get('/fetch-all-members', async (req,res)=>{
     res.send(result);
 })
 
-personalController.post('/check-and-create-mem-Channel', async (req,res)=>{
+personalController.post('/check-and-create-mem-channel', async (req,res)=>{
     const data = req.body;
     try{
         const memberId = data.member_id;
