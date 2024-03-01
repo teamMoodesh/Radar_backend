@@ -1,6 +1,6 @@
-const ApiError = require("..utils/ApiError");
-const ApiResponse = require("..utils/ApiResponse");
-const asyncHandler = require("..utils/AsyncHandler");
+const ApiError = require("../utils/ApiError");
+const ApiResponse = require("../utils/ApiResponse");
+const { asyncHandler } = require("../utils/asyncHandler");
 const members = require("../database/models/members");
 const jwt = require("jsonwebtoken");
 const Sequelize = require("sequelize");
@@ -145,7 +145,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  registerUser,
   loginUser,
   logoutUser,
   refreshAccessToken,
