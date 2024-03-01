@@ -54,13 +54,6 @@ class personalService {
             `;
             return new Promise((resolve, reject)=>{
                 connect.query(sql, (err, result)=>{
-                    if(err){
-                        reject(new ApiError(500, 'Internal Server Error'));
-                    }
-    
-                    if(result.length === 0){
-                        reject(new ApiError(404, 'Error Adding Member'));
-                    }
                     const data = result;
                     resolve({status:'Success', data})
                 })
@@ -134,7 +127,140 @@ class personalService {
             })
         })
     }
+
+    /** To check a memeber Channel relation for personal chat*/
+    static async checkAndCreateMemChannel(memberId, senderId, senderName, recieverName) {
+        const commonChannelExists = await this.getMemberMemberChannels(memberId, senderId)
+        if(commonChannelExists.length > 0) {
+            const sql = `
+                        SELECT DISTINCT mcr.channel_id
+                        FROM member_channel_relation AS mcr
+                        INNER JOIN channels AS ch ON mcr.channel_id = ch.channel_id
+                        WHERE mcr.member_id IN ('${memberId}', '${senderId}')
+                          AND ch.channel_type_id = '1'
+                          AND mcr.channel_id IN (
+                            SELECT channel_id
+                            FROM member_channel_relation
+                            WHERE member_id = '${memberId}'
+                          )
+                          AND mcr.channel_id IN (
+                            SELECT channel_id
+                            FROM member_channel_relation
+                            WHERE member_id = '${senderId}'
+                          );
+            `;
+            return new Promise((resolve, reject)=>{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        reject(new ApiError(500, 'Internal Server Error'));
+                    }
     
+                    if(result.length === 0){
+                        reject(new ApiError(404, 'Error Fetching Members'));
+                    }
+                    const data = result;
+                    resolve(data)
+                })
+            })
+        } else {
+            const channelName = senderName+recieverName;
+            const sql =`
+            INSERT INTO channels (channel_id, channel_name, max_members, channel_type_id, createdAt, updatedAt)
+            VALUES (REPLACE(UUID(), '-', ''), '${channelName}', 10, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+            `;
+            return new Promise((resolve, reject)=>{
+                connect.query(sql, (err, result) => {
+                    if (err) {
+                      return reject(new ApiError(500, 'Internal Server Error'));
+                    }
+                
+                    if (result.length === 0) {
+                      return reject(new ApiError(404, 'Error Fetching Members'));
+                    }
+                
+                    this.fetchChannelIdfromName(channelName)
+                      .then(channelId => {
+                        const channel_id = channelId[0].channel_id;
+                        return Promise.all([
+                          this.insertMemberChannelRelation(memberId, channel_id),
+                          this.insertMemberChannelRelation(senderId, channel_id)
+                        ]).then(() => {
+                            return { channelId: channel_id };
+                          });
+                        })
+                        .then(({ channelId }) => {
+                          return this.getChannelMemeberDetails(memberId, channelId);
+                        })
+                      .then(data => resolve(data))
+                      .catch(err => reject(err));
+                  });
+            })
+        }
+    }
+
+    static async fetchChannelIdfromName(channelName) {
+        const sql = `
+        SELECT channel_id from channels WHERE channel_name =  '${channelName}'`;
+        return new Promise((resolve, reject)=>{
+            connect.query(sql, (err, result)=>{
+                if(err){
+                    reject(new ApiError(500, 'Internal Server Error'));
+                }
+                if(result.length === 0){
+                    reject(new ApiError(404, 'Error Fetching Members'));
+                }
+                const data = result;
+                resolve(data)
+            })
+        })
+    }
+
+    static async getChannelMemeberDetails(memberId, channelId) {
+        const sql = `
+            SELECT *
+            FROM member_channel_relation
+            WHERE member_id = '${memberId}' AND channel_id = '${channelId}'
+        `;
+        return new Promise((resolve, reject)=>{
+            connect.query(sql, (err, result)=>{
+                if(err){
+                    reject(new ApiError(500, 'Internal Server Error'));
+                }
+
+                if(result.length === 0){
+                    reject(new ApiError(404, 'Error Fetching Member-Channel Rel'));
+                }
+                const data = result;
+                resolve(data)
+            })
+        })
+    }
+
+    static async getMemberMemberChannels(memberId, senderId) {
+        const sql = `
+        SELECT DISTINCT mcr.channel_id
+        FROM member_channel_relation AS mcr
+        INNER JOIN channels AS ch ON mcr.channel_id = ch.channel_id
+        WHERE mcr.member_id IN ('${memberId}', '${senderId}')
+          AND ch.channel_type_id = '1'
+          AND mcr.channel_id IN (
+            SELECT channel_id
+            FROM member_channel_relation
+            WHERE member_id = '${memberId}'
+          )
+          AND mcr.channel_id IN (
+            SELECT channel_id
+            FROM member_channel_relation
+            WHERE member_id = '${senderId}'
+          );
+            `;
+            return new Promise((resolve, reject)=>{
+            connect.query(sql, (err, result)=>{
+                const data = result;
+                resolve(data)
+            })
+        })
+    }
 }
 
 

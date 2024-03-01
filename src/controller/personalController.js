@@ -33,9 +33,18 @@ personalController.post('/delete-mem-channel', async (req,res)=>{
     res.send(result);
 })
 
-personalController.post('/fetch-all-members', async (req,res)=>{
-    const data = req.body;
+personalController.get('/fetch-all-members', async (req,res)=>{
     const result = await personalService.fetchAllMembersData();
+    res.send(result);
+})
+
+personalController.post('/check-and-create-mem-Channel', async (req,res)=>{
+    const data = req.body;
+    const memberId = data.member_id;
+    const senderId = data.sender_id;
+    const senderName = data.sender_name;
+    const recieverName = data.reciever_name;
+    const result = await personalService.checkAndCreateMemChannel(memberId, senderId, senderName, recieverName);
     res.send(result);
 })
 
