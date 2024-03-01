@@ -192,7 +192,7 @@ class personalService {
                 }
             })
         } else {
-            const channelName = senderName+recieverName;
+            const channelName = senderName+'-'+recieverName;
             const sql =`
             INSERT INTO channels (channel_id, channel_name, max_members, channel_type_id, createdAt, updatedAt, type)
             VALUES (REPLACE(UUID(), '-', ''), '${channelName}', 100, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'PERSONAL');
