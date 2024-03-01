@@ -6,21 +6,23 @@ class personalService {
     /* get all profile details */
     static async getAllProfileDetails(profile_id) {
         console.log('getAllProfileDetails');
-        const sql = `SELECT * FROM members WHERE member_id = '${profile_id}'`;
         return new Promise((resolve, reject)=>{
-            connect.query(sql,(err, result)=>{
-                if(err){
-                    console.log('Internal Server Error')
-                    reject(new ApiError(500, 'Internal Server Error'));
-                    return
-                }
-                if (result.length === 0) {
-                    reject(new ApiError(404, 'Member not found'));
-                    return;
-                }
-                const data = result[0];
-                resolve({status: 'success', data});
-            })
+            try{
+            const sql = `SELECT * FROM members WHERE member_id = '${profile_id}'`;
+                connect.query(sql,(err, result)=>{
+                    if(err){
+                        console.log('Internal Server Error')
+                        throw(new ApiError(500, 'Internal Server Error'));
+                    }
+                    if (result.length === 0) {
+                        throw(new ApiError(404, 'Member not found'));
+                    }
+                    const members = result[0];
+                    resolve({members});
+                })
+            }catch(error){
+                reject(error)
+            }
         })
     }
 
@@ -29,17 +31,21 @@ class personalService {
         console.log('getAllChannelsWithId');
         const sql = `SELECT c.channel_id, c.channel_name, c.channel_type_id, m.member_name, m.member_role_id, m.designation, m.member_user_name FROM channels c INNER JOIN member_channel_relation mcr ON c.channel_id = mcr.channel_id INNER JOIN members m ON m.member_id = mcr.member_id WHERE m.member_id = '${profile_id}'`;
         return new Promise((resolve, reject)=>{
-            connect.query(sql, (err, result)=>{
-                if(err){
-                    reject(new ApiError(500, 'Internal Server Error'));
-                }
+            try{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        throw(new ApiError(500, 'Internal Server Error'));
+                    }
 
-                if(result.length === 0){
-                    reject(new ApiError(404, 'No channel Found'));
-                }
-                const data = result;
-                resolve({status:'Success', data})
-            })
+                    if(result.length === 0){
+                        throw(new ApiError(404, 'No channel Found'));
+                    }
+                    const data = result;
+                    resolve({status:'Success', data})
+                })
+            }catch(error){
+                reject(error);
+            }
         })
     }
 
@@ -53,10 +59,17 @@ class personalService {
                 VALUES ('${memberId}', '${channelId}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             `;
             return new Promise((resolve, reject)=>{
-                connect.query(sql, (err, result)=>{
-                    const data = result;
-                    resolve({status:'Success', data})
-                })
+                try{
+                    connect.query(sql, (err, result)=>{
+                        const data = result;
+                        if(err){
+                            throw(new ApiError(500, 'internal server error'));
+                        }
+                        resolve({status:'Success', data})
+                    })
+                }catch(error){
+                    reject(error);
+                }
             })
         } else {
             return Promise.reject(new ApiError(400, 'Member already exists in the channel'));
@@ -70,17 +83,21 @@ class personalService {
             WHERE member_id = '${memberId}' AND channel_id = '${channelId}'
         `;
         return new Promise((resolve, reject)=>{
-            connect.query(sql, (err, result)=>{
-                if(err){
-                    reject(new ApiError(500, 'Internal Server Error'));
-                }
+            try{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        throw(new ApiError(500, 'Internal Server Error'));
+                    }
 
-                if(result.length === 0){
-                    reject(new ApiError(404, 'Error Deleting Member'));
-                }
-                const data = result;
-                resolve({status:'Success', data})
-            })
+                    if(result.length === 0){
+                        throw(new ApiError(404, 'Error Deleting Member'));
+                    }
+                    const data = result;
+                    resolve({status:'Success', data})
+                })
+            }catch(error){
+                reject(error);
+            }
         })
     }
 
@@ -93,17 +110,21 @@ class personalService {
             WHERE member_id = '${memberId}' AND channel_id = '${channelId}'
         `;
         return new Promise((resolve, reject)=>{
-            connect.query(sql, (err, result)=>{
-                if(err){
-                    reject(new ApiError(500, 'Internal Server Error'));
-                }
+            try{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        throw(new ApiError(500, 'Internal Server Error'));
+                    }
 
-                if(result.length === 0){
-                    reject(new ApiError(404, 'Error Deleting Member'));
-                }
-                const data = result[0].count;
-                resolve(data)
-            })
+                    if(result.length === 0){
+                        throw(new ApiError(404, 'Error Deleting Member'));
+                    }
+                    const data = result[0].count;
+                    resolve(data)
+                })
+            }catch(error){
+                reject(error);
+            }
         })
     }
 
@@ -114,17 +135,21 @@ class personalService {
             FROM members
         `;
         return new Promise((resolve, reject)=>{
-            connect.query(sql, (err, result)=>{
-                if(err){
-                    reject(new ApiError(500, 'Internal Server Error'));
-                }
+            try{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        throw(new ApiError(500, 'Internal Server Error'));
+                    }
 
-                if(result.length === 0){
-                    reject(new ApiError(404, 'Error Fetching Members'));
-                }
-                const data = result;
-                resolve(data)
-            })
+                    if(result.length === 0){
+                        throw(new ApiError(404, 'Error Fetching Members'));
+                    }
+                    const data = result;
+                    resolve(data)
+                })
+            }catch(error){
+                reject(error);
+            }
         })
     }
 
@@ -150,17 +175,21 @@ class personalService {
                           );
             `;
             return new Promise((resolve, reject)=>{
-                connect.query(sql, (err, result)=>{
-                    if(err){
-                        reject(new ApiError(500, 'Internal Server Error'));
-                    }
-    
-                    if(result.length === 0){
-                        reject(new ApiError(404, 'Error Fetching Members'));
-                    }
-                    const data = result;
-                    resolve(data)
-                })
+                try{
+                    connect.query(sql, (err, result)=>{
+                        if(err){
+                            throw(new ApiError(500, 'Internal Server Error'));
+                        }
+        
+                        if(result.length === 0){
+                            throw(new ApiError(404, 'Error Fetching Members'));
+                        }
+                        const data = result;
+                        resolve(data)
+                    })
+                }catch(error){
+                    reject(error);
+                }
             })
         } else {
             const channelName = senderName+recieverName;
@@ -222,17 +251,21 @@ class personalService {
             WHERE member_id = '${memberId}' AND channel_id = '${channelId}'
         `;
         return new Promise((resolve, reject)=>{
-            connect.query(sql, (err, result)=>{
-                if(err){
-                    reject(new ApiError(500, 'Internal Server Error'));
-                }
+            try{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        throw(new ApiError(500, 'Internal Server Error'));
+                    }
 
-                if(result.length === 0){
-                    reject(new ApiError(404, 'Error Fetching Member-Channel Rel'));
-                }
-                const data = result;
-                resolve(data)
-            })
+                    if(result.length === 0){
+                        throw(new ApiError(404, 'Error Fetching Member-Channel Rel'));
+                    }
+                    const data = result;
+                    resolve(data)
+                })
+            }catch(error){
+                reject(error);
+            }
         })
     }
 
@@ -271,17 +304,21 @@ class personalService {
         WHERE mcr.member_id = '${memberId}';
         `;
         return new Promise((resolve, reject)=>{
+            try{
             connect.query(sql, (err, result)=>{
                 if(err){
-                    reject(new ApiError(500, 'Internal Server Error'));
+                    throw(new ApiError(500, 'Internal Server Error'));
                 }
 
                 if(result.length === 0){
-                    reject(new ApiError(404, 'Error Fetching Members'));
+                    throw(new ApiError(404, 'Error Fetching Members'));
                 }
                 const data = result;
                 resolve(data)
             })
+            }catch(error){
+                reject(error);
+            }
         })
     }
 }

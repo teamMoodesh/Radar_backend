@@ -22,6 +22,11 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
+    await queryInterface.bulkInsert('channel_types', [
+      { type_name: 'HIGH_SECURE', createdAt: new Date(), updatedAt: new Date() },
+      { type_name: 'MEDIUM_SECURE', createdAt: new Date(), updatedAt: new Date() },
+      { type_name: 'LOW_SECURE', createdAt: new Date(), updatedAt: new Date() }
+    ]);
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('channel_types');

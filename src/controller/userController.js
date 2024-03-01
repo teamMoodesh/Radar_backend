@@ -1,5 +1,5 @@
-const ApiError = require("../utils/ApiError");
-const ApiResponse = require("../utils/ApiResponse");
+const {ApiError} = require("../utils/ApiError");
+const {ApiResponse} = require("../utils/ApiResponse");
 const { asyncHandler } = require("../utils/asyncHandler");
 const members = require("../database/models/members");
 const jwt = require("jsonwebtoken");
@@ -11,7 +11,7 @@ const generateAccessAndRefreshTokens = async (member_id) => {
     const member = await members.findByPk(member_id);
     //console.log(user)
     const accessToken = member.generateAccessToken();
-    //console.log(accessToken)
+    // console.log(accessToken)
     const refreshToken = member.generateRefreshToken();
 
     //console.log(refreshToken)
@@ -30,12 +30,12 @@ const generateAccessAndRefreshTokens = async (member_id) => {
 const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
-  if (!(username || email)) {
+  if (!(email)) {
     throw new ApiError(400, "username or email is required");
   }
   const member = await members.findOne({
     where: {
-      [Sequelize.Op.or]: [{ member_user_name: username }, { email: email }],
+      [Sequelize.Op.or]: [{ email: email }],
     },
   });
   if (!member) {
@@ -52,7 +52,7 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 
   const loggedInUser = await members.findOne({
-    where: { id: member.member_id },
+    where: { member_id: member.member_id },
     attributes: { exclude: ["password", "refreshToken"] },
   });
   const options = {

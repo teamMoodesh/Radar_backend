@@ -22,6 +22,14 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
+
+    await queryInterface.bulkInsert('roles', [
+      { role_name: 'CEO', createdAt: new Date(), updatedAt: new Date() },
+      { role_name: 'Team lead', createdAt: new Date(), updatedAt: new Date() },
+      { role_name: 'Full stack developer', createdAt: new Date(), updatedAt: new Date() },
+      { role_name: 'Intern', createdAt: new Date(), updatedAt: new Date() },
+      { role_name: 'Project Manager', createdAt: new Date(), updatedAt: new Date() }
+    ]);
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('roles');

@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const { sequelize } = require("../index");
 const roles = require("./roles");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const members = sequelize.define("members", {
   member_id: {
@@ -39,20 +40,21 @@ const members = sequelize.define("members", {
   refreshToken: {
     type: DataTypes.STRING,
     allowNull: false,
+    defaultValue: null,
   },
 });
 
 members.belongsTo(roles, { foreignKey: "member_role_id" });
 
-members.beforeCreate(async (members, options) => {
-  if (members.changed("password")) {
-    user.password = await bcrypt.hash(members.password, 10);
+members.beforeCreate(async (member, options) => {
+  if (member.changed("password")) {
+    member.password = await bcrypt.hash(member.password, 10);
   }
 });
 
-members.beforeUpdate(async (members, options) => {
-  if (members.changed("password")) {
-    members.password = await bcrypt.hash(member.password, 10);
+members.beforeUpdate(async (member, options) => {
+  if (member.changed("password")) {
+    member.password = await bcrypt.hash(member.password, 10);
   }
 });
 
