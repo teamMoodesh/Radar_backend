@@ -261,6 +261,29 @@ class personalService {
             })
         })
     }
+
+    /* get all channels based on member_id */
+    static async getAllChannelsFromMember(memberId) {
+        const sql = `
+        SELECT c.* 
+        FROM channels c 
+        INNER JOIN member_channel_relation mcr ON mcr.channel_id = c.channel_id 
+        WHERE mcr.member_id = '${memberId}';
+        `;
+        return new Promise((resolve, reject)=>{
+            connect.query(sql, (err, result)=>{
+                if(err){
+                    reject(new ApiError(500, 'Internal Server Error'));
+                }
+
+                if(result.length === 0){
+                    reject(new ApiError(404, 'Error Fetching Members'));
+                }
+                const data = result;
+                resolve(data)
+            })
+        })
+    }
 }
 
 
