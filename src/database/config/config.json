@@ -4,6 +4,7 @@
     "password": "radars_db",
     "database": "radars_db",
     "host": "localhost",
+    "port":"3306",
     "dialect": "mysql"
   }
 }
