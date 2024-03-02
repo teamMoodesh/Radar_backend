@@ -65,20 +65,23 @@ wss.on("connection", (ws) => {
           channel_id,
           client_id
         );
+        console.log(datas)
         active_member_id.push(
           datas.data
             .map((row) => row.client_id)
             .filter((client_id) => client_id !== client_id)
         );
+        console.log(active_member_id);
         let wsIds = [];
         active_member_id.forEach((member) => {
           wsIds.push(clients[member]);
         });
+        console.log(wsIds);
         const channel_type = await groupChatService.getTypeofChannel(
           channel_id
         );
         console.log(channel_type);
-        const message_id = groupChatService.saveMessage(
+        const message_id = await groupChatService.saveMessage(
           msg,
           channel_id,
           client_id,
@@ -90,18 +93,20 @@ wss.on("connection", (ws) => {
         );
         console.log(inactiveClients);
         if (inactiveClients.member_ids.length) {
-          const pers_ids = groupChatService.addPersistantMessage(
-            message_id,
+          const pers_ids = await groupChatService.addPersistantMessage(
+            message_id.data,
             inactiveClients.member_ids
           );
         }
-        wsIds.forEach((wsId) => {
-          try {
-            wsId.send(JSON.stringify({ action: "rply", msg: msg }));
-          } catch (error) {
-            console.error("Error sending message:", error);
-          }
-        });
+        if(Array.isArray(wsIds)&&wsIds.length>0){
+          wsIds.forEach((wsId) => {
+            try {
+              wsId.send(JSON.stringify({ action: "rply", msg: msg }));
+            } catch (error) {
+              console.error("Error sending message:", error);
+            }
+          });
+        }
       }
     } catch (error) {
       console.log(error);
@@ -115,8 +120,8 @@ wss.on("connection", (ws) => {
         const member_id = data.member_id;
         const channel_id = data.channel_id;
         console.log(channel_id);
-
         asyncHandler(groupChatService.updateToInactive(channel_id, member_id));
+        delete(clients[member_id]);
       }
     }catch(error){
       console.log(error)
