@@ -107,7 +107,7 @@ wss.on("connection", (ws) => {
         if(Array.isArray(wsIds)&&wsIds.length>0){
           wsIds.forEach((wsId) => {
             try {
-              wsId.ws.send(JSON.stringify({ action: "rply", msg: msg, member_id, channel_id, member_name:"Ajith S", time }));
+              wsId.ws.send(JSON.stringify({ action: "rply", msg: msg, member_id, channel_id, member_name:member_name.member_name, time }));
             } catch (error) {
               console.error("Error sending message:", error);
             }
