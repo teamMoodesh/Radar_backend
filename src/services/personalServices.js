@@ -158,11 +158,11 @@ class personalService {
         const commonChannelExists = await this.getMemberMemberChannels(memberId, senderId)
         if(commonChannelExists.length > 0) {
             const sql = `
-                        SELECT DISTINCT mcr.channel_id
+                        SELECT DISTINCT mcr.channel_id, ch.channel_name
                         FROM member_channel_relation AS mcr
                         INNER JOIN channels AS ch ON mcr.channel_id = ch.channel_id
                         WHERE mcr.member_id IN ('${memberId}', '${senderId}')
-                          AND ch.channel_type_id = '1'
+                          AND ch.type = 'PERSONAL'
                           AND mcr.channel_id IN (
                             SELECT channel_id
                             FROM member_channel_relation
@@ -192,21 +192,21 @@ class personalService {
                 }
             })
         } else {
-            const channelName = senderName+recieverName;
+            const channelName = senderName+'-'+recieverName;
             const sql =`
-            INSERT INTO channels (channel_id, channel_name, max_members, channel_type_id, createdAt, updatedAt)
-            VALUES (REPLACE(UUID(), '-', ''), '${channelName}', 10, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+            INSERT INTO channels (channel_id, channel_name, max_members, channel_type_id, createdAt, updatedAt, type)
+            VALUES (REPLACE(UUID(), '-', ''), '${channelName}', 100, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'PERSONAL');
             `;
             return new Promise((resolve, reject)=>{
                 connect.query(sql, (err, result) => {
                     if (err) {
-                      return reject(new ApiError(500, 'Internal Server Error'));
-                    }
-                
-                    if (result.length === 0) {
-                      return reject(new ApiError(404, 'Error Fetching Members'));
-                    }
-                
+                        return reject(new ApiError(500, 'Internal Server Error'));
+                      }
+                  
+                      if (result.length === 0) {
+                        return reject(new ApiError(404, 'Error Fetching Members'));
+                      }
+                      
                     this.fetchChannelIdfromName(channelName)
                       .then(channelId => {
                         const channel_id = channelId[0].channel_id;
@@ -275,7 +275,7 @@ class personalService {
         FROM member_channel_relation AS mcr
         INNER JOIN channels AS ch ON mcr.channel_id = ch.channel_id
         WHERE mcr.member_id IN ('${memberId}', '${senderId}')
-          AND ch.channel_type_id = '1'
+          AND ch.type = 'PERSONAL'
           AND mcr.channel_id IN (
             SELECT channel_id
             FROM member_channel_relation
