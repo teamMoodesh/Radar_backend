@@ -26,6 +26,28 @@ class personalService {
         })
     }
 
+    static async getProfileName(profile_id) {
+        console.log('getAllProfileDetails');
+        return new Promise((resolve, reject)=>{
+            try{
+            const sql = `SELECT member_name FROM members WHERE member_id = '${profile_id}'`;
+                connect.query(sql,(err, result)=>{
+                    if(err){
+                        console.log('Internal Server Error')
+                        throw(new ApiError(500, 'Internal Server Error'));
+                    }
+                    if (result.length === 0) {
+                        resolve({});
+                    }
+                    const members = result[0];
+                    resolve(members);
+                })
+            }catch(error){
+                reject(error)
+            }
+        })
+    }
+
     /* get all channels of a member */
     static async getAllChannelsWithId(profile_id){
         console.log('getAllChannelsWithId');

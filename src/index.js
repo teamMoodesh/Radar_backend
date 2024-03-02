@@ -14,6 +14,7 @@ const Routes = require("./routes/personalRoutes");
 const messages = require("./database/models/messages");
 const groupChatService = require("./services/groupChatService");
 const { asyncHandler } = require("./utils/asyncHandler.js");
+const personalService = require("./services/personalServices.js");
 
 http.on("request", app);
 const clients = {};
@@ -25,6 +26,7 @@ wss.on("connection", (ws) => {
         const client_id = data.client_id;
         clients[client_id] = { ws };
         asyncHandler(groupChatService.UpdateWSActiveClients(client_id, true));
+        ws.send(JSON.stringify({sucess:"success"}));
       }
     } catch (error) {
       console.log(error);
@@ -61,6 +63,8 @@ wss.on("connection", (ws) => {
         const channel_id = data.channel_id;
         const client_id = data.member_id;
         const msg = data.msg;
+        const member_name = await personalService.getProfileName(client_id);
+        console.log(member_name)
         const datas = await groupChatService.selectActiveClients(
           channel_id,
           client_id
@@ -98,10 +102,11 @@ wss.on("connection", (ws) => {
             inactiveClients.member_ids
           );
         }
+        let time = dayjs().format('h:mm A');
         if(Array.isArray(wsIds)&&wsIds.length>0){
           wsIds.forEach((wsId) => {
             try {
-              wsId.send(JSON.stringify({ action: "rply", msg: msg }));
+              wsId.send(JSON.stringify({ action: "rply", msg: msg, client_id, channel_id, member_name:member_name.member_name, time }));
             } catch (error) {
               console.error("Error sending message:", error);
             }
