@@ -309,10 +309,9 @@ class personalService {
                 if(err){
                     throw(new ApiError(500, 'Internal Server Error'));
                 }
-
-                if(result.length === 0){
-                    throw(new ApiError(404, 'Error Fetching Members'));
-                }
+                // if(result.length === 0){
+                //     throw(new ApiError(404, 'Error Fetching Members'));
+                // }
                 const data = result;
                 resolve(data)
             })
