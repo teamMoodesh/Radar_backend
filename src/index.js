@@ -15,6 +15,7 @@ const messages = require("./database/models/messages");
 const groupChatService = require("./services/groupChatService");
 const { asyncHandler } = require("./utils/asyncHandler.js");
 const personalService = require("./services/personalServices.js");
+const dayjs = require("dayjs");
 
 http.on("request", app);
 const clients = {};
@@ -59,24 +60,24 @@ wss.on("connection", (ws) => {
     try {
       let data = JSON.parse(messages);
       if (data.action === "message") {
-        let active_member_id = [];
+        const active_member_id = [];
         const channel_id = data.channel_id;
-        const client_id = data.member_id;
+        const member_id = data.member_id;
         const msg = data.msg;
-        const member_name = await personalService.getProfileName(client_id);
-        console.log(member_name)
+        const member_name = await personalService.getProfileName(member_id);
         const datas = await groupChatService.selectActiveClients(
           channel_id,
-          client_id
+          member_id
         );
+        console.log(clients)
         console.log(datas)
         active_member_id.push(
           datas.data
             .map((row) => row.client_id)
-            .filter((client_id) => client_id !== client_id)
+            .filter((client_id) => client_id !== member_id)
         );
         console.log(active_member_id);
-        let wsIds = [];
+        const wsIds = [];
         active_member_id.forEach((member) => {
           wsIds.push(clients[member]);
         });
@@ -88,7 +89,7 @@ wss.on("connection", (ws) => {
         const message_id = await groupChatService.saveMessage(
           msg,
           channel_id,
-          client_id,
+          member_id,
           channel_type.data.type,
           active_member_id
         );
@@ -106,7 +107,7 @@ wss.on("connection", (ws) => {
         if(Array.isArray(wsIds)&&wsIds.length>0){
           wsIds.forEach((wsId) => {
             try {
-              wsId.send(JSON.stringify({ action: "rply", msg: msg, client_id, channel_id, member_name:member_name.member_name, time }));
+              wsId.ws.send(JSON.stringify({ action: "rply", msg: msg, member_id, channel_id, member_name:"Ajith S", time }));
             } catch (error) {
               console.error("Error sending message:", error);
             }
@@ -124,7 +125,6 @@ wss.on("connection", (ws) => {
       if(data.action === 'close'){
         const member_id = data.member_id;
         const channel_id = data.channel_id;
-        console.log(channel_id);
         asyncHandler(groupChatService.updateToInactive(channel_id, member_id));
         delete(clients[member_id]);
       }
