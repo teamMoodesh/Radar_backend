@@ -134,8 +134,9 @@ class groupChatService{
         const sql = `
         SELECT mcr.member_id 
         FROM member_channel_relation mcr 
-        INNER JOIN active_clients ac ON mcr.channel_id = ac.channel_id 
-        WHERE ac.active_sts = 'INACTIVE' AND ac.channel_id = '${channel_id}'
+        INNER JOIN members m ON m.member_id = mcr.member_id
+        INNER JOIN active_clients ac ON m.member_id = ac.client_id  
+        WHERE ac.active_sts = '0' AND mcr.channel_id = '${channel_id}'
         `;
         return new Promise((resolve, reject)=>{
             connect.query(sql, (err, result)=>{
