@@ -6,19 +6,22 @@ class groupChatService{
     /* Update active clients to active status table */
     static async UpdateWSActiveClients(client_id, active_sts){
         console.log('addActiveClients');
-        const sql = `UPDATE active_clients SET updatedAt = now(), active_sts = ${active_sts} WHERE client_id = '${client_id}'`;
-        console.log(sql);
-        return new Promise((resolve, reject)=>{
-            connect.query(sql, (err, result)=>{
-                if(err){
-                    console.log('Internal Server Error')
-                    reject(new ApiError(500, 'Internal Server Error'));
-                    return
-                }
-                const data = result[0];
-                resolve({status: 'success', data});
+        try{
+            const sql = `UPDATE active_clients SET updatedAt = now(), active_sts = ${active_sts} WHERE client_id = '${client_id}'`;
+            console.log(sql);
+            return new Promise((resolve, reject)=>{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        console.log('Internal Server Error')
+                        throw(new ApiError(500, 'Internal Server Error'));
+                    }
+                    const data = result[0];
+                    resolve({status: 'success', data});
+                })
             })
-        })
+        }catch(error){
+            reject(error);
+        }
     } 
 
     /* update active clients channel */
