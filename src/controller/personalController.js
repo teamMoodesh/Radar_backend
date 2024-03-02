@@ -86,7 +86,7 @@ personalController.post('/check-and-create-mem-channel', async (req,res)=>{
         const memberId = data.member_id;
         const senderId = data.sender_id;
         const senderName = data.sender_name;
-        const recieverName = data.reciever_name;
+        const recieverName = data.receiver_name;
         if(!memberId || !senderId || !senderName || !recieverName){
             throw(ApiError(404, 'Data not found error'));
         }
