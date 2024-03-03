@@ -115,5 +115,12 @@ personalController.post('/get-all-channels', async (req, res) => {
     }
 });
 
+personalController.post('/fetch-chat-data', async (req,res)=>{
+    const data = req.body.params;
+    const channelId = data.channelId;
+    const clientId = data.clientId;
+    const result = await personalService.getAllChats(channelId,clientId);
+    res.send(result);
+});
 
 module.exports = personalController;
