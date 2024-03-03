@@ -6,59 +6,63 @@ class groupChatService{
     /* Update active clients to active status table */
     static async UpdateWSActiveClients(client_id, active_sts){
         console.log('addActiveClients');
-        try{
-            const sql = `UPDATE active_clients SET updatedAt = now(), active_sts = ${active_sts} WHERE client_id = '${client_id}'`;
-            console.log(sql);
-            return new Promise((resolve, reject)=>{
-                connect.query(sql, (err, result)=>{
-                    if(err){
-                        console.log('Internal Server Error')
-                        throw(new ApiError(500, 'Internal Server Error'));
-                    }
-                    const data = result[0];
-                    resolve({status: 'success', data});
-                })
-            })
-        }catch(error){
-            reject(error);
-        }
-    } 
-
-    /* update active clients channel */
-    static async updateChannelIdOfAC(channel_id, client_id){
-        console.log('addActiveClients');
-        const sql = `UPDATE active_clients SET channel_id = '${channel_id}', updatedAt = now() WHERE client_id = '${client_id}'`;
+        const sql = `UPDATE active_clients SET updatedAt = now(), active_sts = ${active_sts} WHERE client_id = '${client_id}'`;
+        console.log(sql);
         return new Promise((resolve, reject)=>{
             connect.query(sql, (err, result)=>{
                 if(err){
                     console.log('Internal Server Error')
-                    reject(new ApiError(500, 'Internal Server Error'));
-                    return
+                    return reject(new ApiError(500, 'Internal Server Error'));
                 }
                 const data = result[0];
                 resolve({status: 'success', data});
             })
         })
+} 
+
+    /* update active clients channel */
+    static async updateChannelIdOfAC(channel_id, client_id){
+        console.log('addActiveClients');
+        if(channel_id && client_id){
+            const sql = `UPDATE active_clients SET channel_id = '${channel_id}', updatedAt = now() WHERE client_id = '${client_id}'`;
+            console.log(sql)
+            return new Promise((resolve, reject)=>{
+                try{
+                    connect.query(sql, (err, result)=>{
+                        if(err){
+                            console.log('Internal Server Error')
+                            return reject(new ApiError(500, err.message));
+                        }
+                        const data = result[0];
+                        resolve({status: 'success', data});
+                    })
+                }catch(error){
+                    reject(error)
+                }
+            })
+        }else{
+            return({statusCode:"404", message:"incorrect prop value"})
+        }
     }
     
     /* update active clients to inactive */
     static async updateToInactive(channel_id, client_id){
         console.log('updateToInactive');
-        try{
-            const sql = `UPDATE active_clients SET active_sts = 0, updatedAt = now() WHERE client_id = '${client_id}' AND channel_id = '${channel_id}'`;
-            return new Promise((resolve, reject)=>{
-                connect.query(sql, (err, result)=>{
-                    if(err){
-                        console.log('Internal Server Error')
-                        throw(new ApiError(500, 'Internal Server Error'));
-                    }
-                    const data = result[0];
-                    resolve({status: 'success', data});
-                })
+        const sql = `UPDATE active_clients SET active_sts = 0, updatedAt = now() WHERE client_id = '${client_id}' AND channel_id = '${channel_id}'`;
+        return new Promise((resolve, reject)=>{
+                try{
+                    connect.query(sql, (err, result)=>{
+                        if(err){
+                            console.log('Internal Server Error')
+                            throw(new ApiError(500, 'Internal Server Error'));
+                        }
+                        const data = result[0];
+                        resolve({status: 'success', data});
+                    })
+                }catch(error){
+                    reject(error)
+                }
             })
-        }catch(error){
-            reject(error)
-        }
     }
 
     /* select active clients */
@@ -91,20 +95,22 @@ class groupChatService{
         console.log('getChannelType')
         const sql = `SELECT type FROM channels WHERE channel_id = '${channel_id}'`;
         return new Promise((resolve, reject)=>{
-            connect.query(sql, (err, result)=>{
-                if(err){
-                    reject(new ApiError(500, 'Internal Server Error'));
-                    return
-                }
+            try{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        throw(new ApiError(500, 'Internal Server Error'));
+                    }
 
-                if(result.length === 0){
-                    reject(new ApiError(403, 'No channel Found'));
-                    return
-                }
+                    if(result.length === 0){
+                        resolve(new ApiError(403, 'No channel Found'));
+                    }
 
-                const data = result[0];
-                resolve({status:'success', data});
-            })
+                    const data = result[0];
+                    resolve({status:'success', data});
+                })
+            }catch(error){
+                reject(error);
+            }
         })
     }
 
@@ -116,15 +122,19 @@ class groupChatService{
         VALUES('${msg}', '${channel_type}', '${channel_id}', '${client_id}', '${receivers}', now(), now(), now())
         `;
         return new Promise((resolve, reject)=>{
-            connect.query(sql, (err, result)=>{
-                if(err){
-                    console.log('Internal Server Error')
-                    reject(new ApiError(500, 'Internal Server Error'));
-                    return
-                }
-                const data = result.insertId
-                resolve({ status: 'success', data });
-            })
+            try{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        console.log('Internal Server Error')
+                        throw(new ApiError(500, 'Internal Server Error'));
+                        return
+                    }
+                    const data = result.insertId
+                    resolve({ status: 'success', data });
+                })
+            }catch(error){
+                reject(error);
+            }
         })
     }
 
@@ -139,20 +149,23 @@ class groupChatService{
         WHERE ac.active_sts = '0' AND mcr.channel_id = '${channel_id}'
         `;
         return new Promise((resolve, reject)=>{
-            connect.query(sql, (err, result)=>{
-                if(err){
-                    reject(new ApiError(500, 'Internal Server Error'));
-                    return
-                };
+            try{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        reject(new ApiError(500, 'Internal Server Error'));
+                        return
+                    };
 
-                if(result.length === 0){
-                    reject(new ApiError(403, 'result Empty'));
-                    return
-                }
+                    if(result.length === 0){
+                        resolve({})
+                    }
 
-                const member_ids = result.map(row=>row.member_id);
-                resolve({status:'success', member_ids})
-            })
+                    const member_ids = result.map(row=>row.member_id);
+                    resolve({status:'success', member_ids})
+                })
+            }catch(error){
+                reject(error);
+            }
         })
 
     }
@@ -165,17 +178,22 @@ class groupChatService{
             INSERT INTO persistant_messages (message_id, member_id, read_sts, createdAt, updatedAt) 
             VALUES(?, ?, 0, now(), now());
             `;
-            const pers_id = new Promise((resolve, reject)=>{
-                connect.query(sql, [msg_id, member_id], (err,result)=>{
-                    if(err){
-                        reject(new ApiError(500, 'Internal Server Error'));
-                        return
-                    }
-                    const data = result.insertId;
-                    resolve(data);
+            try{
+                const pers_id = new Promise((resolve, reject)=>{
+                    connect.query(sql, [msg_id, member_id], (err,result)=>{
+                        if(err){
+                            reject(new ApiError(500, 'Internal Server Error'));
+                            return
+                        }
+                        const data = result.insertId;
+                        resolve(data);
+                    });
                 });
-            });
-            pers_ids.push(pers_id);
+                pers_ids.push(pers_id);
+            }
+            catch(error){
+                reject(error);
+            }
         }
         return Promise.all(pers_ids);
     }
@@ -190,21 +208,25 @@ class groupChatService{
         `;
     
         return new Promise((resolve, reject) => {
-            connect.query(sql, (err, result) => {
-                if (err) {
-                    reject(new ApiError(500, 'Internal Server Error'));
-                }
-    
-                if (result.length !== 0) {
-                    const pers_ids = result.map(row => row.pm_id);
-                    console.log(pers_ids);
-                    resolve({ status: 'success', data: pers_ids });
-                } else {
-                    const pers_ids = [];
-                    resolve({ status: 'success', data: pers_ids });
-                }
-    
-            });
+            try{
+                connect.query(sql, (err, result) => {
+                    if (err) {
+                        throw(new ApiError(500, 'Internal Server Error'));
+                    }
+        
+                    if (result.length !== 0) {
+                        const pers_ids = result.map(row => row.pm_id);
+                        console.log(pers_ids);
+                        resolve({ status: 'success', data: pers_ids });
+                    } else {
+                        const pers_ids = [];
+                        resolve({ status: 'success', data: pers_ids });
+                    }
+        
+                });
+            }catch(error){
+                reject(error)
+            }
         });
     }
     
@@ -215,15 +237,19 @@ class groupChatService{
         UPDATE persistant_messages SET read_sts = 1 WHERE id IN (${pers_ids.join(',')})
         `;
 
-        return new Promise((resolve, reject)=>{
-            connect.query(sql, (err, result)=>{
-                if(err){
-                    reject(new ApiError(500, 'Internal Server Error'));
-                }
-                
-                resolve('success');
+        try{
+            return new Promise((resolve, reject)=>{
+                connect.query(sql, (err, result)=>{
+                    if(err){
+                        reject(new ApiError(500, 'Internal Server Error'));
+                    }
+                    
+                    resolve('success');
+                })
             })
-        })
+        }catch(error){
+            reject(error)
+        }
     }
 
 }
