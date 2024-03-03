@@ -120,8 +120,6 @@ personalController.post('/fetch-chat-data', async (req,res)=>{
     const channelId = data.channelId;
     const clientId = data.clientId;
     const result = await personalService.getAllChats(channelId,clientId);
-    console.log(result);
-
     res.send(result);
 });
 

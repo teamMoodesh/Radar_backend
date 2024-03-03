@@ -353,11 +353,7 @@ class personalService {
         INNER JOIN members m2 ON m2.member_id = m.sender_unique_id 
         WHERE m.chat_unique_id = '${channelId}'
         ORDER BY time ;
-        
         `;
-        console.log(sql);
-        console.log(clientId);
-        console.log("inside servicess");
         return new Promise((resolve, reject)=>{
             try{
             connect.query(sql, (err, result)=>{
@@ -365,7 +361,6 @@ class personalService {
                     throw(new ApiError(500, 'Internal Server Error'));
                 }
                 const data = result;
-                console.log(data);
                 resolve(data)
 
             })
