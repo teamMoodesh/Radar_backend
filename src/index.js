@@ -97,7 +97,7 @@ wss.on("connection", (ws) => {
           channel_id
         );
         console.log(inactiveClients);
-        if (inactiveClients.member_ids.length) {
+        if (Array.isArray(inactiveClients.member_ids) && inactiveClients.member_ids.length) {
           const pers_ids = await groupChatService.addPersistantMessage(
             message_id.data,
             inactiveClients.member_ids
