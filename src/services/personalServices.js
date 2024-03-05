@@ -180,7 +180,7 @@ class personalService {
         const commonChannelExists = await this.getMemberMemberChannels(memberId, senderId)
         if(commonChannelExists.length > 0) {
             const sql = `
-                        SELECT DISTINCT mcr.channel_id, ch.channel_name
+                        SELECT DISTINCT mcr.channel_id, ch.channel_name, ch.type
                         FROM member_channel_relation AS mcr
                         INNER JOIN channels AS ch ON mcr.channel_id = ch.channel_id
                         WHERE mcr.member_id IN ('${memberId}', '${senderId}')
@@ -217,7 +217,7 @@ class personalService {
             const channelName = senderName+'-'+recieverName;
             const sql =`
             INSERT INTO channels (channel_id, channel_name, max_members, channel_type_id, createdAt, updatedAt, type)
-            VALUES (REPLACE(UUID(), '-', ''), '${channelName}', 100, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'PERSONAL');
+            VALUES (UUID(), '${channelName}', 100, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'PERSONAL');
             `;
             return new Promise((resolve, reject)=>{
                 connect.query(sql, (err, result) => {
@@ -242,7 +242,7 @@ class personalService {
                         .then(({ channelId }) => {
                           return this.getChannelMemeberDetails(memberId, channelId);
                         })
-                      .then(data => resolve(data))
+                      .then(data => {console.log(data);resolve(data)})
                       .catch(err => reject(err));
                   });
             })
@@ -251,7 +251,7 @@ class personalService {
 
     static async fetchChannelIdfromName(channelName) {
         const sql = `
-        SELECT channel_id from channels WHERE channel_name =  '${channelName}'`;
+        SELECT channel_id, channel_name from channels WHERE channel_name =  '${channelName}'`;
         return new Promise((resolve, reject)=>{
             connect.query(sql, (err, result)=>{
                 if(err){
@@ -268,9 +268,10 @@ class personalService {
 
     static async getChannelMemeberDetails(memberId, channelId) {
         const sql = `
-            SELECT *
-            FROM member_channel_relation
-            WHERE member_id = '${memberId}' AND channel_id = '${channelId}'
+            SELECT mcr.*, c.channel_name
+            FROM member_channel_relation mcr
+            INNER JOIN channels c ON mcr.channel_id = c.channel_id
+            WHERE mcr.member_id = '${memberId}' AND mcr.channel_id = '${channelId}'
         `;
         return new Promise((resolve, reject)=>{
             try{
