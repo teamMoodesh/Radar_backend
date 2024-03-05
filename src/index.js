@@ -13,7 +13,7 @@ let wss = new WebSocket({
 const Routes = require("./routes/personalRoutes");
 const messages = require("./database/models/messages");
 const groupChatService = require("./services/groupChatService");
-const { asyncHandler } = require("./utils/asyncHandler.js");
+const { asyncHandler } = require("./utils/AsyncHandler.js");
 const personalService = require("./services/personalServices.js");
 const dayjs = require("dayjs");
 

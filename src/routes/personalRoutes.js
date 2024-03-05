@@ -1,6 +1,6 @@
 const express = require("express");
 const personalRouter = express.Router();
-const { asyncHandler } = require("../utils/asyncHandler");
+const { asyncHandler } = require("../utils/AsyncHandler");
 
 // const groupChatController = require('../controller/groupChatController');
 const personalController = require("../controller/personalController");

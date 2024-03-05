@@ -3,7 +3,6 @@ const personalController = express.Router();
 const connect = require('../database/index');
 const personalService = require('../services/personalServices');
 const { ApiError } = require('../utils/ApiError');
-const { asyncHandler } = require('../utils/asyncHandler');
 
 personalController.post('/profile-data', async (req,res)=>{
     const data = req.body;
