@@ -346,14 +346,14 @@ class personalService {
 
     static async getAllChats(channelId, clientId) {
         const sql = `
-        select m2.member_name as name, m.send_time as time, m.messages as message, 
+        select m2.member_name as name, DATE_FORMAT(m.send_time, '%h:%i %p') as time, m.messages as message, 
         case when m2.member_id  = '${clientId}' THEN  'true'
         else 'false' 
         end as self
         from messages m 
         INNER JOIN members m2 ON m2.member_id = m.sender_unique_id 
         WHERE m.chat_unique_id = '${channelId}'
-        ORDER BY time ;
+        ORDER BY m.send_time ;
         `;
         return new Promise((resolve, reject)=>{
             try{
